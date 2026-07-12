@@ -217,7 +217,7 @@ Open a PR with specs for one payment scheme implementation.
 After spec approval, implement in a **single SDK** (TypeScript, Python OR Go).
 
 **Package structure:**
-- Create `<sdk>/packages/mechanisms/<chain>/` (TS) or `<sdk>/mechanisms/<chain>/` (Py/Go)
+- Create `typescript/packages/mechanisms/<chain>/` (TS), `python/x402/mechanisms/<chain>/` (Py), or `go/mechanisms/<chain>/` (Go)
 - Do not modify core packages
 
 **Required interfaces per SDK:**
@@ -225,7 +225,7 @@ After spec approval, implement in a **single SDK** (TypeScript, Python OR Go).
 | SDK | Interfaces |
 |-----|------------|
 | TypeScript (`@x402/core`) | `SchemeNetworkClient`, `SchemeNetworkServer`, `SchemeNetworkFacilitator` |
-| Go (`github.com/x402-foundation/x402/go`) | `ClientScheme`, `ServerScheme`, `FacilitatorScheme` |
+| Go (`github.com/x402-foundation/x402/go`) | `SchemeNetworkClient`, `SchemeNetworkServer`, `SchemeNetworkFacilitator` |
 | Python (`x402`) | `SchemeNetworkClient`, `SchemeNetworkServer`, `SchemeNetworkFacilitator` |
 
 **Required tests:**
