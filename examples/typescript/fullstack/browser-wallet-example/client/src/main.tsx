@@ -1,0 +1,19 @@
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import { App } from "./App";
+import { WalletProvider } from "./contexts/WalletContext";
+import "./styles.css";
+
+const rootElement = document.getElementById("root");
+
+if (!rootElement) {
+  throw new Error("Root element not found");
+}
+
+createRoot(rootElement).render(
+  <StrictMode>
+    <WalletProvider>
+      <App />
+    </WalletProvider>
+  </StrictMode>,
+);
