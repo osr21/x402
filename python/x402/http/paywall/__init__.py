@@ -35,6 +35,7 @@ import html
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Protocol
 
+from ...mechanisms.evm import get_asset_info
 from ..utils import htmlsafe_json_dumps
 
 if TYPE_CHECKING:
@@ -117,7 +118,8 @@ def _get_display_amount(payment_required: PaymentRequired) -> float:
         amount = getattr(first, "amount", None)
         if amount:
             try:
-                return float(amount) / 1_000_000  # USDC 6 decimals
+                asset_info = get_asset_info(first.network, first.asset)
+                return float(amount) / (10 ** asset_info["decimals"])
             except (ValueError, TypeError):
                 pass
     return 0.0

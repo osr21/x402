@@ -1,13 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { createPublicClient, formatUnits, http, publicActions, type Chain } from "viem";
+import { createPublicClient, http, publicActions, type Chain } from "viem";
 import * as allChains from "viem/chains";
 import { useAccount, useSwitchChain, useWalletClient, useConnect, useDisconnect } from "wagmi";
 
-import { ExactEvmScheme } from "@x402/evm/exact/client";
 import { x402Client } from "@x402/core/client";
 import { encodePaymentSignatureHeader } from "@x402/core/http";
 import type { PaymentRequired } from "@x402/core/types";
-import { getUSDCBalance } from "./utils";
+import { createEvmClientScheme, formatRequirementBalance, getErc20Balance } from "./utils";
 
 import { Spinner } from "./Spinner";
 import { getNetworkDisplayName, isTestnetNetwork } from "../paywallUtils";
@@ -75,10 +74,10 @@ export function EvmPaywall({ paymentRequired, onSuccessfulResponse }: EvmPaywall
     if (!address) {
       return;
     }
-    const balance = await getUSDCBalance(publicClient, address);
-    const formattedBalance = formatUnits(balance, 6);
+    const balance = await getErc20Balance(publicClient, firstRequirement, address);
+    const formattedBalance = formatRequirementBalance(balance, firstRequirement);
     setFormattedUsdcBalance(formattedBalance);
-  }, [address, publicClient]);
+  }, [address, publicClient, firstRequirement]);
 
   const handleSwitchChain = useCallback(async () => {
     if (isCorrectChain) {
@@ -140,7 +139,7 @@ export function EvmPaywall({ paymentRequired, onSuccessfulResponse }: EvmPaywall
 
     try {
       setStatus("Checking balance...");
-      const balance = await getUSDCBalance(publicClient, address);
+      const balance = await getErc20Balance(publicClient, firstRequirement, address);
 
       if (balance === 0n) {
         throw new Error(`Insufficient balance. Make sure you have ${tokenName} on ${chainName}`);
@@ -150,7 +149,7 @@ export function EvmPaywall({ paymentRequired, onSuccessfulResponse }: EvmPaywall
 
       const signer = wagmiToClientSigner(walletClient);
       const client = new x402Client();
-      client.register("eip155:*", new ExactEvmScheme(signer));
+      client.register("eip155:*", createEvmClientScheme(signer, firstRequirement));
 
       // Create payment payload - client automatically handles version
       const paymentPayload = await client.createPaymentPayload(paymentRequired);
@@ -183,7 +182,9 @@ export function EvmPaywall({ paymentRequired, onSuccessfulResponse }: EvmPaywall
     handleSwitchChain,
     wagmiWalletClient,
     publicClient,
+    firstRequirement,
     chainName,
+    tokenName,
     onSuccessfulResponse,
   ]);
 

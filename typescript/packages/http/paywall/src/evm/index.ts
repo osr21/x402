@@ -5,6 +5,7 @@ import type {
   PaywallConfig,
 } from "../types";
 import { getEvmPaywallHtml } from "./paywall";
+import { getFormattedRequirementAmount } from "./utils";
 
 /**
  * EVM paywall handler that supports EVM-based networks (CAIP-2 format only)
@@ -33,14 +34,8 @@ export const evmPaywall: PaywallNetworkHandler = {
     paymentRequired: PaymentRequired,
     config: PaywallConfig,
   ): string {
-    const amount = requirement.amount
-      ? parseFloat(requirement.amount) / 1000000
-      : requirement.maxAmountRequired
-        ? parseFloat(requirement.maxAmountRequired) / 1000000
-        : 0;
-
     return getEvmPaywallHtml({
-      amount,
+      amount: getFormattedRequirementAmount(requirement),
       paymentRequired,
       currentUrl: paymentRequired.resource?.url || config.currentUrl || "",
       testnet: config.testnet ?? true,

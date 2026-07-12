@@ -121,3 +121,19 @@ export function getDefaultAsset(network: Network): ExactDefaultAssetInfo {
   }
   return info;
 }
+
+/**
+ * Look up a registered asset by network and address.
+ *
+ * @param network - CAIP-2 network identifier (e.g. "eip155:8453")
+ * @param assetAddress - ERC-20 contract address
+ * @returns The registered asset info
+ * @throws If the asset is not registered for the network
+ */
+export function getAssetInfo(network: Network, assetAddress: string): ExactDefaultAssetInfo {
+  const info = getDefaultAsset(network);
+  if (info.address.toLowerCase() !== assetAddress.toLowerCase()) {
+    throw new Error(`Token ${assetAddress} is not a registered asset for network ${network}.`);
+  }
+  return info;
+}
