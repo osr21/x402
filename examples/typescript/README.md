@@ -46,11 +46,7 @@ Examples of different client implementations for interacting with X402 services:
 ### Fullstack
 
 - `fullstack/next/` - Next.js app demonstrating route protection with `x402-next` middleware.
-- `fullstack/mainnet/` - Next.js app configured for Base mainnet using the Coinbase hosted facilitator.
-- `fullstack/next-advanced/` - [WIP] Deep Next.js integration using a paywall + session cookie after verify/settle.
-- `fullstack/browser-wallet-example/` - Browser wallet template: Hono server + React client with session and one-time payments.
-- `fullstack/farcaster-miniapp/` - Farcaster Mini App template with x402-protected APIs using [MiniKit](https://www.base.org/build/mini-apps).
-- `fullstack/auth_based_pricing/` - SIWE + JWT with conditional pricing ($0.01 with JWT vs $0.10 without) using x402.
+- `fullstack/miniapp/` - Farcaster Mini App template with x402-protected APIs using [MiniKit](https://www.base.org/build/mini-apps).
 
 ### Servers
 
