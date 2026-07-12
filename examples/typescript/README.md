@@ -46,6 +46,7 @@ Examples of different client implementations for interacting with X402 services:
 ### Fullstack
 
 - `fullstack/next/` - Next.js app demonstrating route protection with `x402-next` middleware.
+- `fullstack/browser-wallet-example/` - Browser wallet template: Hono server + React client with session and one-time payments.
 - `fullstack/miniapp/` - Farcaster Mini App template with x402-protected APIs using [MiniKit](https://www.base.org/build/mini-apps).
 
 ### Servers
