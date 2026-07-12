@@ -1,0 +1,43 @@
+{
+  "name": "@x402/browser-wallet-example",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev:client": "vite --config vite.config.ts",
+    "dev:server": "tsx server/index.ts",
+    "build": "tsc --noEmit && vite build --config vite.config.ts",
+    "preview": "vite preview --config vite.config.ts",
+    "format": "prettier -c .prettierrc --write \"**/*.{ts,tsx,js,cjs,json,md,html,css}\"",
+    "format:check": "prettier -c .prettierrc --check \"**/*.{ts,tsx,js,cjs,json,md,html,css}\"",
+    "lint": "eslint . --ext .ts,.tsx --fix",
+    "lint:check": "eslint . --ext .ts,.tsx"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.14.0",
+    "@x402/core": "workspace:*",
+    "@x402/evm": "workspace:*",
+    "@x402/fetch": "workspace:*",
+    "@x402/hono": "workspace:*",
+    "dotenv": "^16.4.7",
+    "hono": "4.9.2",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "viem": "^2.39.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.24.0",
+    "@types/node": "^22.13.4",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@typescript-eslint/eslint-plugin": "^8.29.1",
+    "@typescript-eslint/parser": "^8.29.1",
+    "eslint": "^9.24.0",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-jsdoc": "^50.6.9",
+    "eslint-plugin-prettier": "^5.2.6",
+    "prettier": "3.5.2",
+    "tsx": "^4.20.4",
+    "typescript": "^5.9.2",
+    "vite": "^6.3.5"
+  }
+}
