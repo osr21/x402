@@ -55,6 +55,25 @@ describe("Network Handlers", () => {
       expect(html).toContain("<!DOCTYPE html>");
       expect(html).toMatch(/Test App|EVM Paywall/);
     });
+
+    it("formats 18-decimal EVM default assets correctly", () => {
+      const requirement = {
+        ...evmRequirement,
+        network: "eip155:4326",
+        asset: "0xFAfDdbb3FC7688494971a79cc65DCa3EF82079E7",
+        amount: "1000000000000000000",
+      };
+      const html = evmPaywall.generateHtml(
+        requirement,
+        { ...mockPaymentRequired, accepts: [requirement] },
+        {
+          appName: "MegaETH Test",
+          testnet: false,
+        },
+      );
+
+      expect(html).toContain("amount: 1");
+    });
   });
 
   describe("svmPaywall", () => {

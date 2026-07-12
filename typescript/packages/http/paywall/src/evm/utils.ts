@@ -1,13 +1,16 @@
-import type { Address, Client, Chain, Transport, Account } from "viem";
-
-/**
- * USDC contract addresses by chain ID
- */
-const USDC_ADDRESSES: Record<number, Address> = {
-  1: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // Ethereum Mainnet
-  8453: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913", // Base Mainnet
-  84532: "0x036CbD53842c5426634e7929541eC2318f3dCF7e", // Base Sepolia
-};
+import { ExactEvmScheme, UptoEvmScheme } from "@x402/evm";
+import type { ClientEvmSigner } from "@x402/evm";
+import {
+  formatUnits,
+  getAddress,
+  type Account,
+  type Address,
+  type Chain,
+  type Client,
+  type Transport,
+} from "viem";
+import { getAssetInfo } from "../../../../mechanisms/evm/src/shared/defaultAssets";
+import type { PaymentRequirements } from "../types";
 
 /**
  * ERC20 balanceOf ABI
@@ -23,33 +26,79 @@ const ERC20_BALANCE_ABI = [
 ] as const;
 
 /**
- * Gets the USDC balance for a specific address on the current chain.
+ * Creates the EVM client scheme that matches the selected requirement.
+ *
+ * @returns The registered EVM client scheme implementation for the requirement.
+ */
+export function createEvmClientScheme(
+  signer: ClientEvmSigner,
+  requirement: PaymentRequirements,
+): ExactEvmScheme | UptoEvmScheme {
+  switch (requirement.scheme) {
+    case "exact":
+      return new ExactEvmScheme(signer);
+    case "upto":
+      return new UptoEvmScheme(signer);
+    default:
+      throw new Error(`Unsupported EVM payment scheme: ${requirement.scheme}`);
+  }
+}
+
+/**
+ * Formats the selected requirement amount using the registered asset decimals.
+ *
+ * @returns The human-readable token amount.
+ */
+export function getFormattedRequirementAmount(requirement: PaymentRequirements): number {
+  const amount = requirement.amount ?? requirement.maxAmountRequired;
+  if (!amount) {
+    return 0;
+  }
+
+  return Number(
+    formatUnits(BigInt(amount), getAssetInfo(requirement.network, requirement.asset).decimals),
+  );
+}
+
+/**
+ * Formats an ERC-20 balance for display.
+ *
+ * @returns The human-readable token balance.
+ */
+export function formatRequirementBalance(
+  balance: bigint,
+  requirement: PaymentRequirements,
+): string {
+  return formatUnits(balance, getAssetInfo(requirement.network, requirement.asset).decimals);
+}
+
+/**
+ * Gets the configured ERC-20 balance for a specific address on the current chain.
  *
  * @param client - Viem client instance connected to the blockchain
- * @param address - Address to check the USDC balance for
- * @returns USDC balance as bigint (0 if USDC not supported on chain or error)
+ * @param requirement - Payment requirement containing the ERC-20 asset address
+ * @param address - Address to check the token balance for
+ * @returns ERC-20 balance as bigint (0 on read failure)
  */
-export async function getUSDCBalance<
+export async function getErc20Balance<
   TTransport extends Transport,
   TChain extends Chain,
   TAccount extends Account | undefined = undefined,
->(client: Client<TTransport, TChain, TAccount>, address: Address): Promise<bigint> {
-  const chainId = client.chain?.id;
-  if (!chainId) return 0n;
-
-  const usdcAddress = USDC_ADDRESSES[chainId];
-  if (!usdcAddress) return 0n;
-
+>(
+  client: Client<TTransport, TChain, TAccount>,
+  requirement: PaymentRequirements,
+  address: Address,
+): Promise<bigint> {
   try {
     const balance = await client.readContract({
-      address: usdcAddress,
+      address: getAddress(requirement.asset),
       abi: ERC20_BALANCE_ABI,
       functionName: "balanceOf",
       args: [address],
     });
     return balance as bigint;
   } catch (error) {
-    console.error("Failed to fetch USDC balance:", error);
+    console.error("Failed to fetch token balance:", error);
     return 0n;
   }
 }
